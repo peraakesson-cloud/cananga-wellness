@@ -1,0 +1,706 @@
+/* ==========================================================================
+   Cananga Wellness — stilmall
+   --------------------------------------------------------------------------
+   Vill du byta färg på hela webbplatsen? Ändra bara värdena under :root
+   här nedanför. Allt annat följer med automatiskt.
+   ========================================================================== */
+
+:root {
+
+  /* --- FÄRGER ------------------------------------------------------------
+     Kontrast mot gräddvit bakgrund (WCAG AA kräver minst 4,5:1 för text):
+       --ink        på --cream ... 15,9:1
+       --ink-soft   på --cream ...  5,7:1
+       --accent-ink på --cream ...  6,7:1
+       vit text     på --accent-deep 5,4:1
+     Byter du färger — kontrollera på https://webaim.org/resources/contrastchecker/
+     -------------------------------------------------------------------- */
+  --cream:       #FDF9F4;   /* sidbakgrund */
+  --cream-alt:   #F5EDE4;   /* varannan sektion */
+  --ink:         #211C18;   /* brödtext och rubriker */
+  --ink-soft:    #6B6259;   /* dämpad text */
+  --accent:      #B5603F;   /* dekor: linjer, ikoner */
+  --accent-deep: #A65331;   /* knappbakgrund (vit text ovanpå) */
+  --accent-ink:  #8A462C;   /* länkar och accentfärgad text */
+  --line:        #E7DCD1;   /* tunna avdelare */
+  --white:       #FFFFFF;
+
+  /* --- TYPSNITT (systemtypsnitt, laddas inte från nätet) --------------- */
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino,
+                  "Book Antiqua", Georgia, "Times New Roman", serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                  "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* --- MÅTT ------------------------------------------------------------ */
+  --wrap:      68rem;
+  --gutter:    clamp(1.25rem, 5vw, 2.5rem);
+  --section-y: clamp(3.5rem, 10vw, 7rem);
+  --radius:    14px;
+}
+
+/* --------------------------------------------------------------------------
+   Grundläggande återställning
+   -------------------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;      /* så rubriken inte hamnar under sidhuvudet */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+
+p { margin: 0 0 1.15em; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--accent-ink); }
+a:hover { text-decoration-thickness: 2px; }
+
+ul { margin: 0; padding: 0; list-style: none; }
+
+img, svg { max-width: 100%; height: auto; }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--cream-alt);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+[hidden] { display: none !important; }
+
+/* Synlig tangentbordsfokus — viktigt för tillgänglighet */
+:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Hjälpklasser
+   -------------------------------------------------------------------------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* "Hoppa till innehåll" — syns bara vid tangentbordsnavigering */
+.skip {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: 100;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 0.7rem 1.1rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip:focus { top: 0; }
+
+.eyebrow {
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.lead {
+  font-size: clamp(1.0625rem, 1.4vw + 0.7rem, 1.25rem);
+  color: var(--ink-soft);
+  max-width: 34em;
+}
+
+.fineprint {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  margin-top: 1.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   Knappar
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;                /* bekväm träffyta på mobil */
+  padding: 0.75rem 1.6rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease,
+              border-color 0.15s ease, transform 0.1s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn--primary {
+  background: var(--accent-deep);
+  color: var(--white);
+}
+.btn--primary:hover { background: #8F4728; }
+.btn--primary:disabled { opacity: 0.55; cursor: default; }
+
+.btn--quiet {
+  background: transparent;
+  color: var(--accent-ink);
+  border-color: var(--line);
+}
+.btn--quiet:hover {
+  border-color: var(--accent);
+  background: var(--cream-alt);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent-ink);
+  border-color: var(--line);
+  min-height: 2.5rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9375rem;
+}
+.btn--ghost:hover { border-color: var(--accent); }
+
+/* --------------------------------------------------------------------------
+   Sidhuvud och meny
+   -------------------------------------------------------------------------- */
+
+.site-head {
+  border-bottom: 1px solid var(--line);
+  background: var(--cream);
+}
+
+.site-head__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 4.5rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--ink);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.brand__mark { color: var(--accent); display: inline-flex; }
+
+.nav__list {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 1.9rem);
+}
+
+.nav a {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.96875rem;
+  padding-block: 0.4rem;
+}
+.nav a:hover { color: var(--accent-ink); }
+.nav__cta a { color: var(--accent-ink); }
+
+.nav-toggle { display: none; }
+
+/* Mobilmeny: JS lägger klassen "js" på <html>, därför göms menyn bara
+   när JavaScript faktiskt fungerar. Utan JS syns alla länkar direkt. */
+@media (max-width: 47.99em) {
+  .js .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .nav-toggle__bars {
+    display: inline-grid;
+    gap: 3px;
+    width: 16px;
+  }
+  .nav-toggle__bars span {
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+  }
+
+  .js .nav { display: none; flex-basis: 100%; }
+  .js .nav[data-open="true"] { display: block; }
+
+  .nav__list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: 0.75rem;
+  }
+  .nav__list > li + li { border-top: 1px solid var(--line); }
+  .nav a { display: block; padding: 0.85rem 0.25rem; }
+  .nav__cta { padding-top: 0.75rem; border-top: 0 !important; }
+  .nav__cta a { display: inline-flex; }
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  padding-block: clamp(3.5rem, 12vw, 8rem) clamp(3rem, 9vw, 6rem);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mjuk, dekorativ ljusfläck bakom rubriken */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -30% 45% auto auto;
+  width: min(52rem, 90vw);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(181, 96, 63, 0.13), transparent 62%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero__inner { position: relative; z-index: 1; }
+
+.hero__title {
+  font-size: clamp(2.75rem, 10vw, 5.25rem);
+  margin-bottom: 0.4em;
+  /* Smal spalt så rubriken bryts i två rader — utan <br>, så att
+     skärmläsare läser "Traditionell thaimassage" som två ord. */
+  max-width: 9em;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+}
+
+.hero__meta {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Sektioner
+   -------------------------------------------------------------------------- */
+
+.section { padding-block: var(--section-y); }
+
+.section--alt {
+  background: var(--cream-alt);
+  border-block: 1px solid var(--line);
+}
+
+.section__title {
+  font-size: clamp(1.75rem, 4.5vw, 2.6rem);
+  margin-bottom: 0.6rem;
+}
+
+/* Kort accentstreck ovanför varje sektionsrubrik */
+.section__title::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  margin-bottom: 1.4rem;
+}
+
+.section__intro {
+  color: var(--ink-soft);
+  max-width: 38em;
+  margin-bottom: 2.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Behandlingar
+   -------------------------------------------------------------------------- */
+
+.treatments {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.treatment {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+.treatment__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.treatment__name {
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+  margin: 0;
+}
+
+.treatment__price {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  white-space: nowrap;
+}
+
+.treatment__amount {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+
+.treatment__time {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+}
+
+.treatment__desc {
+  color: var(--ink-soft);
+  max-width: 44em;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Bokning
+   -------------------------------------------------------------------------- */
+
+.booking {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  overflow: hidden;
+}
+
+.booking__gate {
+  padding: clamp(2.5rem, 8vw, 4.5rem) clamp(1.25rem, 5vw, 2.5rem);
+  text-align: center;
+}
+
+.booking__gate-text {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  max-width: 30em;
+  margin-inline: auto;
+  margin-bottom: 1.75rem;
+}
+
+.booking__mount {
+  min-height: 34rem;
+  width: 100%;
+  overflow: auto;
+}
+
+.booking__setup,
+.booking__error {
+  padding: clamp(1.5rem, 5vw, 2.25rem);
+  background: #FBF3E4;
+  border-top: 3px solid var(--accent);
+  color: var(--ink);
+  font-size: 0.96875rem;
+}
+.booking__setup p:last-child,
+.booking__error p:last-child { margin-bottom: 0; }
+
+.booking__fallback {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+.booking__fallback a { font-weight: 600; white-space: nowrap; }
+
+/* --------------------------------------------------------------------------
+   Öppettider
+   -------------------------------------------------------------------------- */
+
+.hours {
+  margin: 0;
+  max-width: 30rem;
+  border-top: 1px solid var(--line);
+}
+
+.hours__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.hours dt { color: var(--ink); }
+.hours dd {
+  margin: 0;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Hitta hit / kontakt
+   -------------------------------------------------------------------------- */
+
+.contact {
+  display: grid;
+  gap: clamp(2.5rem, 7vw, 4rem);
+}
+
+.contact__address {
+  font-style: normal;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.contact__phone {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4.5vw, 2rem);
+  margin-bottom: 0.75rem;
+}
+.contact__phone a { text-decoration: none; }
+.contact__phone a:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   Sidfot
+   -------------------------------------------------------------------------- */
+
+.site-foot {
+  background: var(--ink);
+  color: #E6DED6;
+  padding-block: clamp(2.5rem, 7vw, 4rem);
+}
+
+.site-foot a { color: #E3A184; }          /* 7,8:1 mot mörk bakgrund */
+
+.site-foot__inner {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.site-foot__brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--cream);
+  margin: 0;
+}
+
+.site-foot__copy {
+  font-size: 0.875rem;
+  color: #A79C92;                          /* 5,4:1 mot --ink */
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Fast bokningsknapp längst ner på mobil
+   -------------------------------------------------------------------------- */
+
+.mobile-cta {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 50;
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.7rem var(--gutter);
+  padding-bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(253, 249, 244, 0.94);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+}
+.mobile-cta .btn { flex: 1; }
+.mobile-cta .btn--quiet { flex: 0 0 auto; background: var(--white); }
+
+/* Extra luft i botten så sidfoten inte hamnar bakom knapparna */
+body.has-mobile-cta { padding-bottom: 5.5rem; }
+
+@media (min-width: 48em) {
+  .mobile-cta { display: none !important; }
+  body.has-mobile-cta { padding-bottom: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   Innehållssidor (integritetspolicy, 404)
+   -------------------------------------------------------------------------- */
+
+.page { padding-block: clamp(3rem, 8vw, 5rem); }
+
+.prose { max-width: 42rem; }
+
+.prose h1 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 0.6em; }
+
+.prose h2 {
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  margin-top: 2.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.prose h3 {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.prose ul {
+  list-style: disc;
+  padding-left: 1.3rem;
+  margin-bottom: 1.15em;
+  color: var(--ink-soft);
+}
+.prose li { margin-bottom: 0.45em; }
+
+.prose p { color: var(--ink-soft); }
+.prose strong { color: var(--ink); }
+
+.prose__updated {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.prose__note {
+  background: var(--cream-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.4rem;
+  font-size: 0.96875rem;
+  margin-block: 1.75rem;
+}
+
+/* 404 */
+.notfound {
+  text-align: center;
+  padding-block: clamp(4rem, 15vw, 9rem);
+}
+.notfound__code {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 18vw, 8rem);
+  color: var(--accent);
+  line-height: 1;
+  margin: 0 0 0.5rem;
+}
+.notfound__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 2.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Större skärmar
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 48em) {
+
+  .treatments { gap: 1.5rem; }
+
+  .contact {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .site-foot__inner {
+    grid-template-columns: repeat(2, auto);
+    justify-content: space-between;
+    align-items: start;
+    gap: 2rem 4rem;
+  }
+}
+
+@media (min-width: 64em) {
+  .site-foot__inner { grid-template-columns: repeat(4, auto); }
+}
+
+/* --------------------------------------------------------------------------
+   Respektera systeminställning för minskad rörelse
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Utskrift
+   -------------------------------------------------------------------------- */
+
+@media print {
+  .site-head, .mobile-cta, .booking, .skip { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .section--alt { background: none; }
+}

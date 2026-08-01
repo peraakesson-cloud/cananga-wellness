@@ -1,0 +1,6 @@
+# Alla sökmotorer är välkomna att indexera hela webbplatsen.
+User-agent: *
+Allow: /
+
+# Byter du till egen domän — ändra adressen på raden nedan.
+Sitemap: https://peraakesson-cloud.github.io/cananga-wellness/sitemap.xml
