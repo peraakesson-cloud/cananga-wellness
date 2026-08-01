@@ -45,7 +45,9 @@ webbläsaren så ser du resultatet på en gång.
 Öppna `index.html` i en textredigerare (TextEdit, Anteckningar eller
 Visual Studio Code — vad som helst som visar ren text).
 
-Sök efter `600` så hittar du **två ställen**. Båda måste ändras.
+Sidan har två behandlingar: 60 min för 600 kr och 30 min för 400 kr.
+Sök efter priset du vill ändra (`600` eller `400`) så hittar du **två
+ställen**. Båda måste ändras.
 
 **Ställe 1 — det kunden ser:**
 
@@ -66,10 +68,13 @@ Längst ner i filen, under rubriken `STRUKTURERAD DATA`:
 
 Skriv samma siffra här. Här ska det bara vara siffror, inget "kr".
 
-Och en rad till, en bit upp i samma block:
+Varje behandling har ett eget `"price"`-block under `"makesOffer"` — se till
+att du ändrar rätt.
+
+Och en rad till, en bit upp i samma block, som visar prisspannet:
 
 ```json
-"priceRange": "600 kr",
+"priceRange": "400–600 kr",
 ```
 
 > **Varför två ställen?** Det översta är texten på sidan. Det nedersta är en
