@@ -177,31 +177,33 @@ Samma sak i `integritetspolicy.html` och `404.html`.
 
 ## Koppla in bokningskalendern
 
-Besökaren väljer först hur lång behandling hen vill boka, sedan tid.
-Knapparna byggs automatiskt utifrån en lista i `index.html`. Sök efter
-`ÄNDRA HÄR`:
+Besökaren klickar på **Visa bokningskalender**. Då öppnas hela din
+Cal.com-kalender inne på sidan, och kunden väljer själv 30 eller 60
+minuter och sedan en tid.
+
+Inställningen ligger i `index.html`. Sök efter `ÄNDRA HÄR`:
 
 ```js
 var CAL_EVENTS = [
-  { label: "60 minuter", price: "600 kr", link: "ANVÄNDARNAMN/60min", namespace: "60min" },
-  { label: "30 minuter", price: "400 kr", link: "ANVÄNDARNAMN/30min", namespace: "30min" }
+  { label: "Visa bokningskalender", price: "", link: "canangewellness-vjsgfw", namespace: "boka" }
 ];
 ```
 
-- `label` och `price` — texten på knappen här på webbplatsen
-- `link` — allt som står **efter** `cal.com/` i bokningslänken
-- `namespace` — andra argumentet i `Cal("init", "...", ...)`
+- `label` — texten på knappen här på webbplatsen
+- `link` — ditt användarnamn, alltså det som står efter `cal.com/`
+- `namespace` och `price` — låt stå som de är
 
-De två sista hittar du i Cal.com: **Event Type → Embed → Inline**.
+**Lägger du till en behandling i Cal.com** dyker den upp i kalendern
+automatiskt — du behöver inte ändra något här. Men lägg till den i
+listan **Behandlingar** längre upp på sidan också, den är separat.
 
-**Lägg till en behandling:** kopiera en hel rad och fyll i den nya.
-**Ta bort en:** radera raden. Knappar och kalendrar följer med automatiskt.
+> ⚠️ **Byt inte användarnamn i Cal.com** om du inte måste. Gör du det
+> slutar kalendern fungera direkt, och `link` ovan måste uppdateras till
+> det nya namnet. Vill du ändra hur namnet *ser ut* för kunden — ändra
+> visningsnamnet under Settings → Profile i stället, det påverkar
+> ingenting här.
 
-> Ändrar du **användarnamn** i Cal.com slutar alla länkar att fungera —
-> då måste `link` uppdateras på varje rad. Byt hellre namn på *event-typen*
-> än på kontot.
-
-Om en länk är fel visar sidan automatiskt "Ring oss så bokar vi åt dig"
+Om länken är fel visar sidan automatiskt "Ring oss så bokar vi åt dig"
 i stället för en trasig kalender.
 
 ### Öppettider i kalendern

@@ -100,32 +100,31 @@
         <!-- EN BEHANDLING = ETT <li>-BLOCK. Kopiera hela blocket for att lagga till fler. -->
         <li class="treatment">
           <div class="treatment__head">
-            <h3 class="treatment__name">Thaimassage, 30 minuter</h3>
+            <h3 class="treatment__name">Traditionell thaimassage, 30 minuter</h3>
             <p class="treatment__price">
               <span class="treatment__amount">400&nbsp;kr</span>
               <span class="treatment__time">30 min</span>
             </p>
           </div>
           <p class="treatment__desc">
-            En kortare behandling när tiden är knapp. Samma teknik, men vi
-            koncentrerar oss på rygg, nacke och axlar — där spänningarna
-            oftast sitter.
+            En kortare behandling på matta, i lösa och bekväma kläder — helt
+            utan olja. Vi koncentrerar oss på rygg, nacke och axlar, där
+            spänningarna oftast sitter.
           </p>
         </li>
 
         <li class="treatment">
           <div class="treatment__head">
-            <h3 class="treatment__name">Traditionell thaimassage</h3>
+            <h3 class="treatment__name">Traditionell thaimassage, 60 minuter</h3>
             <p class="treatment__price">
               <span class="treatment__amount">600&nbsp;kr</span>
               <span class="treatment__time">60 min</span>
             </p>
           </div>
           <p class="treatment__desc">
-            Utförs på matta i lösa, bekväma kläder — helt utan olja. Terapeuten
-            arbetar med händer, tummar, armbågar och fötter längs kroppens
-            energilinjer, varvat med passiva stretchrörelser som mjukar upp
-            hela kroppen.
+            En hel behandling på matta, i lösa och bekväma kläder — helt
+            utan olja. Vi arbetar längs kroppens energilinjer med tryck och
+            passiva stretchrörelser, från fötter till nacke.
           </p>
         </li>
         <!-- SLUT PÅ BEHANDLINGSBLOCK -->
@@ -155,19 +154,17 @@
            — radera hela blocket och klistra in deras kod i stället.
 
            KALENDERN ÄR INKOPPLAD mot Cal.com-kontot
-           per-mikael-akesson-vjsgfw och kan boka två behandlingar:
-           "60min" (600 kr) och "30min" (400 kr).
+           canangewellness-vjsgfw. Knappen öppnar hela kontots kalender,
+           där besökaren själv väljer 30 eller 60 minuter och sedan tid.
 
-           Besökaren väljer först längd, sedan tid. Knapparna byggs
-           automatiskt utifrån listan CAL_EVENTS nedan.
+           Därför behöver du INTE ändra något här när du lägger till
+           eller tar bort en behandling i Cal.com — den dyker upp i
+           kalendern automatiskt. Men glöm inte att lägga till den i
+           listan "Behandlingar" längre upp på sidan, den är separat.
 
-           VILL DU LÄGGA TILL EN BEHANDLING (t.ex. en 90-minuters):
-             1. Skapa event-typen i Cal.com och öppna dess
-                inbäddningskod ("Embed" → "Inline").
-             2. I den koden står två saker du behöver:
-                  Cal("init", "90min", ...)        ← namespace
-                  calLink: "ditt-namn/90min"       ← link
-             3. Kopiera en rad i CAL_EVENTS nedan och fyll i dem.
+           BYTER DU ANVÄNDARNAMN i Cal.com slutar kalendern att
+           fungera. Då måste "link" nedan uppdateras till det nya
+           namnet. Det är det som står efter cal.com/ i din adress.
 
            GLÖM INTE: ställ in Availability i Cal.com till 10:00–21:00
            alla dagar, annars går det att boka tider ni har stängt.
@@ -189,7 +186,7 @@
              Ta bort en genom att radera raden. Knapparna på sidan
              byggs automatiskt utifrån den här listan. */
           var CAL_EVENTS = [
-            { label: "Visa bokningskalender", price: "", link: "per-mikael-akesson-vjsgfw", namespace: "boka" }
+            { label: "Visa bokningskalender", price: "", link: "canangewellness-vjsgfw", namespace: "boka" }
           ];
         </script>
 
@@ -527,7 +524,7 @@
       "availability": "https://schema.org/InStock",
       "itemOffered": {
         "@type": "Service",
-        "name": "Traditionell thaimassage",
+        "name": "Traditionell thaimassage, 60 minuter",
         "serviceType": "Thaimassage"
       }
     },
@@ -538,7 +535,7 @@
       "availability": "https://schema.org/InStock",
       "itemOffered": {
         "@type": "Service",
-        "name": "Thaimassage, 30 minuter",
+        "name": "Traditionell thaimassage, 30 minuter",
         "serviceType": "Thaimassage"
       }
     }
