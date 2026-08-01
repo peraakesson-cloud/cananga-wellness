@@ -100,6 +100,21 @@
         <!-- EN BEHANDLING = ETT <li>-BLOCK. Kopiera hela blocket for att lagga till fler. -->
         <li class="treatment">
           <div class="treatment__head">
+            <h3 class="treatment__name">Thaimassage, 30 minuter</h3>
+            <p class="treatment__price">
+              <span class="treatment__amount">400&nbsp;kr</span>
+              <span class="treatment__time">30 min</span>
+            </p>
+          </div>
+          <p class="treatment__desc">
+            En kortare behandling när tiden är knapp. Samma teknik, men vi
+            koncentrerar oss på rygg, nacke och axlar — där spänningarna
+            oftast sitter.
+          </p>
+        </li>
+
+        <li class="treatment">
+          <div class="treatment__head">
             <h3 class="treatment__name">Traditionell thaimassage</h3>
             <p class="treatment__price">
               <span class="treatment__amount">600&nbsp;kr</span>
@@ -111,21 +126,6 @@
             arbetar med händer, tummar, armbågar och fötter längs kroppens
             energilinjer, varvat med passiva stretchrörelser som mjukar upp
             hela kroppen.
-          </p>
-        </li>
-
-        <li class="treatment">
-          <div class="treatment__head">
-            <h3 class="treatment__name">Thaimassage, 30 minuter</h3>
-            <p class="treatment__price">
-              <span class="treatment__amount">400&nbsp;kr</span>
-              <span class="treatment__time">30 min</span>
-            </p>
-          </div>
-          <p class="treatment__desc">
-            En kortare behandling när tiden är knapp. Samma teknik, men vi
-            koncentrerar oss på rygg, nacke och axlar — där spänningarna
-            oftast sitter.
           </p>
         </li>
         <!-- SLUT PÅ BEHANDLINGSBLOCK -->
@@ -189,8 +189,7 @@
              Ta bort en genom att radera raden. Knapparna på sidan
              byggs automatiskt utifrån den här listan. */
           var CAL_EVENTS = [
-            { label: "60 minuter", price: "600 kr", link: "per-mikael-akesson-vjsgfw/60min", namespace: "60min" },
-            { label: "30 minuter", price: "400 kr", link: "per-mikael-akesson-vjsgfw/30min", namespace: "30min" }
+            { label: "Visa bokningskalender", price: "", link: "per-mikael-akesson-vjsgfw", namespace: "boka" }
           ];
         </script>
 
@@ -198,7 +197,7 @@
              Ingen kontakt med Cal.com sker förrän man klickar. -->
         <div class="booking__gate" id="cal-gate">
           <p class="booking__gate-text">
-            Välj hur lång behandling du vill boka. Kalendern laddas från vår
+            I kalendern väljer du behandling, dag och tid. Den laddas från vår
             bokningsleverantör Cal.com först när du klickar — då skickas din
             IP-adress till dem.
           </p>
@@ -265,17 +264,20 @@
           box.hidden = true;
           mounts.appendChild(box);
 
+          /* Priset visas bara om det är ifyllt */
+          var text = ev.price ? ev.label + " · " + ev.price : ev.label;
+
           var start = document.createElement("button");
           start.type = "button";
           start.className = "btn " + (i === 0 ? "btn--primary" : "btn--quiet");
-          start.textContent = ev.label + " · " + ev.price;
+          start.textContent = text;
           start.addEventListener("click", function () { visa(i); });
           choices.appendChild(start);
 
           var tab = document.createElement("button");
           tab.type = "button";
           tab.className = "booking__tab";
-          tab.textContent = ev.label + " · " + ev.price;
+          tab.textContent = text;
           tab.setAttribute("aria-pressed", "false");
           tab.addEventListener("click", function () { visa(i); });
           tabs.appendChild(tab);
