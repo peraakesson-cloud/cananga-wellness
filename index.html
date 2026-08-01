@@ -154,16 +154,20 @@
            till en annan leverantör (Bokadirekt, Setmore, Boka.se ...)
            — radera hela blocket och klistra in deras kod i stället.
 
-           KALENDERN ÄR INKOPPLAD och pekar på event-typen "60m" hos
-           Cal.com-kontot per-mikael-akesson-vjsgfw.
+           KALENDERN ÄR INKOPPLAD mot Cal.com-kontot
+           per-mikael-akesson-vjsgfw och kan boka två behandlingar:
+           "60min" (600 kr) och "30min" (400 kr).
 
-           VILL DU BYTA TILL EN ANNAN EVENT-TYP (t.ex. en 90-minuters):
-             1. Skapa event-typen i Cal.com och kopiera dess
+           Besökaren väljer först längd, sedan tid. Knapparna byggs
+           automatiskt utifrån listan CAL_EVENTS nedan.
+
+           VILL DU LÄGGA TILL EN BEHANDLING (t.ex. en 90-minuters):
+             1. Skapa event-typen i Cal.com och öppna dess
                 inbäddningskod ("Embed" → "Inline").
              2. I den koden står två saker du behöver:
-                  Cal("init", "90m", ...)        ← namnrymden
-                  calLink: "ditt-namn/90m"       ← länken
-             3. Skriv in dem på raderna märkta "ÄNDRA HÄR" nedan.
+                  Cal("init", "90min", ...)        ← namespace
+                  calLink: "ditt-namn/90min"       ← link
+             3. Kopiera en rad i CAL_EVENTS nedan och fyll i dem.
 
            GLÖM INTE: ställ in Availability i Cal.com till 10:00–21:00
            alla dagar, annars går det att boka tider ni har stängt.
@@ -172,27 +176,40 @@
       <div class="booking">
 
         <script>
-          /* ÄNDRA HÄR — allt som står efter cal.com/ i din bokningslänk */
-          var CAL_LINK = "per-mikael-akesson-vjsgfw/60m";
+          /* ÄNDRA HÄR — en rad per behandling som ska gå att boka online.
 
-          /* Namnrymden Cal.com använder för just den här kalendern.
-             Står som andra argumentet i Cal("init", "60m", ...) i koden
-             du kopierar från Cal.com. Byter du event-typ — byt även här. */
-          var CAL_NAMESPACE = "60m";
+               label + price = texten på knappen här på webbplatsen
+               link          = allt som står efter cal.com/ i bokningslänken
+               namespace     = andra argumentet i Cal("init", "...", ...)
+
+             Både link och namespace hittar du i inbäddningskoden hos
+             Cal.com (Event Type → Embed → Inline).
+
+             Lägg till en behandling genom att kopiera en hel rad.
+             Ta bort en genom att radera raden. Knapparna på sidan
+             byggs automatiskt utifrån den här listan. */
+          var CAL_EVENTS = [
+            { label: "60 minuter", price: "600 kr", link: "per-mikael-akesson-vjsgfw/60min", namespace: "60min" },
+            { label: "30 minuter", price: "400 kr", link: "per-mikael-akesson-vjsgfw/30min", namespace: "30min" }
+          ];
         </script>
 
         <!-- Visas innan besökaren har öppnat kalendern.
              Ingen kontakt med Cal.com sker förrän man klickar. -->
         <div class="booking__gate" id="cal-gate">
           <p class="booking__gate-text">
-            Kalendern laddas från vår bokningsleverantör Cal.com först när du
-            klickar. Då skickas din IP-adress till dem.
+            Välj hur lång behandling du vill boka. Kalendern laddas från vår
+            bokningsleverantör Cal.com först när du klickar — då skickas din
+            IP-adress till dem.
           </p>
-          <button class="btn btn--primary" type="button" id="cal-load">Visa bokningskalender</button>
+          <div class="booking__choices" id="cal-choices"></div>
         </div>
 
-        <!-- Här renderas kalendern -->
-        <div class="booking__mount" id="cal-mount" hidden></div>
+        <!-- Flikar för att byta behandling när kalendern är öppen -->
+        <div class="booking__tabs" id="cal-tabs" role="group" aria-label="Välj behandling" hidden></div>
+
+        <!-- Här renderas kalendrarna, en behållare per behandling -->
+        <div id="cal-mounts"></div>
 
         <!-- Visas bara om CAL_LINK inte är ifylld ännu -->
         <div class="booking__setup" id="cal-setup" hidden>
@@ -214,32 +231,81 @@
 
       <script>
       (function () {
-        var PLACEHOLDER = "DITT-ANVANDARNAMN/thaimassage";
-        var gate  = document.getElementById("cal-gate");
-        var mount = document.getElementById("cal-mount");
-        var setup = document.getElementById("cal-setup");
-        var error = document.getElementById("cal-error");
-        var btn   = document.getElementById("cal-load");
-        if (!gate || !mount) return;
+        var gate    = document.getElementById("cal-gate");
+        var choices = document.getElementById("cal-choices");
+        var tabs    = document.getElementById("cal-tabs");
+        var mounts  = document.getElementById("cal-mounts");
+        var setup   = document.getElementById("cal-setup");
+        var error   = document.getElementById("cal-error");
+        if (!gate || !choices || !mounts) return;
 
-        /* Inte konfigurerad ännu → visa instruktionsrutan i stället */
-        if (typeof CAL_LINK !== "string" || CAL_LINK === PLACEHOLDER || CAL_LINK === "") {
+        /* Bara behandlingar som faktiskt är ifyllda */
+        var events = (typeof CAL_EVENTS !== "undefined" && CAL_EVENTS.length) ? CAL_EVENTS : [];
+        events = events.filter(function (e) {
+          return e && e.link && e.namespace && e.link.indexOf("DITT-ANVANDARNAMN") === -1;
+        });
+
+        /* Inget inkopplat ännu → visa instruktionsrutan i stället */
+        if (!events.length) {
           gate.hidden = true;
           setup.hidden = false;
           return;
         }
 
-        /* Klick-för-att-ladda: ingen tredjepartskod körs innan besökaren vill det.
-           Vill du att kalendern ska laddas direkt när sidan öppnas — byt raden
-           btn.addEventListener("click", load);  mot enbart:  load();          */
-        btn.addEventListener("click", load);
+        var bootstrapped = false;
+        var laddad = {};
 
-        function load() {
+        /* Bygg en startknapp, en flik och en behållare per behandling */
+        events.forEach(function (ev, i) {
+          ev.mountId = "cal-mount-" + i;
+
+          var box = document.createElement("div");
+          box.className = "booking__mount";
+          box.id = ev.mountId;
+          box.hidden = true;
+          mounts.appendChild(box);
+
+          var start = document.createElement("button");
+          start.type = "button";
+          start.className = "btn " + (i === 0 ? "btn--primary" : "btn--quiet");
+          start.textContent = ev.label + " · " + ev.price;
+          start.addEventListener("click", function () { visa(i); });
+          choices.appendChild(start);
+
+          var tab = document.createElement("button");
+          tab.type = "button";
+          tab.className = "booking__tab";
+          tab.textContent = ev.label + " · " + ev.price;
+          tab.setAttribute("aria-pressed", "false");
+          tab.addEventListener("click", function () { visa(i); });
+          tabs.appendChild(tab);
+          ev.tab = tab;
+        });
+
+        /* Klick-för-att-ladda: ingen tredjepartskod körs innan besökaren
+           själv väljer behandling. Vill du att den första kalendern ska
+           laddas direkt när sidan öppnas — lägg till raden:  visa(0);   */
+        function visa(i) {
           gate.hidden = true;
-          mount.hidden = false;
-          btn.disabled = true;
+          error.hidden = true;
+          tabs.hidden = events.length < 2;
 
-          /* Cal.coms officiella inbäddningsskript */
+          events.forEach(function (ev, j) {
+            document.getElementById(ev.mountId).hidden = (j !== i);
+            ev.tab.setAttribute("aria-pressed", j === i ? "true" : "false");
+          });
+
+          if (!laddad[i]) {
+            laddad[i] = true;
+            ladda(events[i]);
+          }
+        }
+
+        /* Cal.coms officiella inbäddningsskript — körs bara en gång */
+        function bootstrap() {
+          if (bootstrapped) return;
+          bootstrapped = true;
+
           (function (C, A, L) {
             var p = function (a, ar) { a.q.push(ar); };
             var d = C.document;
@@ -267,31 +333,53 @@
             };
           })(window, "https://app.cal.com/embed/embed.js", "init");
 
-          Cal("init", CAL_NAMESPACE, { origin: "https://app.cal.com" });
-
           Cal.config = Cal.config || {};
           Cal.config.forwardQueryParams = true;
+        }
 
-          Cal.ns[CAL_NAMESPACE]("inline", {
-            elementOrSelector: "#cal-mount",
+        function ladda(ev) {
+          bootstrap();
+
+          Cal("init", ev.namespace, { origin: "https://app.cal.com" });
+
+          Cal.ns[ev.namespace]("inline", {
+            elementOrSelector: "#" + ev.mountId,
             config: { layout: "month_view", useSlotsViewOnSmallScreen: "true" },
-            calLink: CAL_LINK
+            calLink: ev.link
           });
 
-          Cal.ns[CAL_NAMESPACE]("ui", {
+          Cal.ns[ev.namespace]("ui", {
             hideEventTypeDetails: false,
             layout: "month_view",
             cssVarsPerTheme: { light: { "cal-brand": "#A65331" } }
           });
 
-          /* Syns ingen kalender inom 10 sekunder — visa telefonalternativet */
+          /* Cal.com säger själv till om länken är fel eller kalendern är klar.
+             Utan det här skulle en trasig länk visa Cal.coms egen 404-ruta
+             inuti kalendern i stället för vårt telefonnummer. */
+          Cal.ns[ev.namespace]("on", {
+            action: "linkFailed",
+            callback: function () { fail(); }
+          });
+
+          Cal.ns[ev.namespace]("on", {
+            action: "linkReady",
+            callback: function () { ev.klar = true; }
+          });
+
+          /* Reservkoll: har inget hänt inom 10 sekunder — visa telefonnumret */
           setTimeout(function () {
-            if (!mount.querySelector("iframe")) fail();
+            var box = document.getElementById(ev.mountId);
+            if (!ev.klar && box && !box.hidden && !box.querySelector("iframe")) fail();
           }, 10000);
         }
 
         function fail() {
-          mount.hidden = true;
+          events.forEach(function (ev) {
+            var box = document.getElementById(ev.mountId);
+            if (box) box.hidden = true;
+          });
+          tabs.hidden = true;
           error.hidden = false;
         }
       })();

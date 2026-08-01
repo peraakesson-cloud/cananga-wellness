@@ -455,6 +455,46 @@ code {
   margin-bottom: 1.75rem;
 }
 
+/* Knapparna där besökaren väljer behandling */
+.booking__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+/* Flikar för att byta behandling när kalendern är öppen */
+.booking__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.85rem clamp(1rem, 4vw, 1.5rem);
+  border-bottom: 1px solid var(--line);
+  background: var(--cream);
+}
+
+.booking__tab {
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.booking__tab:hover { border-color: var(--accent); }
+
+/* Vald behandling */
+.booking__tab[aria-pressed="true"] {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+  color: var(--white);
+}
+
 .booking__mount {
   min-height: 34rem;
   width: 100%;

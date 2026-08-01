@@ -177,29 +177,32 @@ Samma sak i `integritetspolicy.html` och `404.html`.
 
 ## Koppla in bokningskalendern
 
-Kalendern **är inkopplad** och visar event-typen `60m` (Thai Massage, 1 timme,
-600 kr) från Cal.com-kontot `per-mikael-akesson-vjsgfw`.
+Besökaren väljer först hur lång behandling hen vill boka, sedan tid.
+Knapparna byggs automatiskt utifrån en lista i `index.html`. Sök efter
+`ÄNDRA HÄR`:
 
-### Byta till en annan event-typ
+```js
+var CAL_EVENTS = [
+  { label: "60 minuter", price: "600 kr", link: "ANVÄNDARNAMN/60min", namespace: "60min" },
+  { label: "30 minuter", price: "400 kr", link: "ANVÄNDARNAMN/30min", namespace: "30min" }
+];
+```
 
-Skapar du till exempel en 90-minutersbehandling i Cal.com:
+- `label` och `price` — texten på knappen här på webbplatsen
+- `link` — allt som står **efter** `cal.com/` i bokningslänken
+- `namespace` — andra argumentet i `Cal("init", "...", ...)`
 
-1. Öppna den nya event-typen i Cal.com → **Embed** → **Inline**.
-2. I koden du får står två saker du behöver:
+De två sista hittar du i Cal.com: **Event Type → Embed → Inline**.
 
-   ```js
-   Cal("init", "90m", ...)      ← namnrymden
-   calLink: "ditt-namn/90m"     ← länken
-   ```
+**Lägg till en behandling:** kopiera en hel rad och fyll i den nya.
+**Ta bort en:** radera raden. Knappar och kalendrar följer med automatiskt.
 
-3. Öppna `index.html`, sök efter `ÄNDRA HÄR`, och skriv in båda:
+> Ändrar du **användarnamn** i Cal.com slutar alla länkar att fungera —
+> då måste `link` uppdateras på varje rad. Byt hellre namn på *event-typen*
+> än på kontot.
 
-   ```js
-   var CAL_LINK      = "per-mikael-akesson-vjsgfw/90m";
-   var CAL_NAMESPACE = "90m";
-   ```
-
-Båda måste ändras — bara den ena räcker inte, då blir kalendern tom.
+Om en länk är fel visar sidan automatiskt "Ring oss så bokar vi åt dig"
+i stället för en trasig kalender.
 
 ### Öppettider i kalendern
 
