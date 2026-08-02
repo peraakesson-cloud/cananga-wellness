@@ -376,6 +376,49 @@ code {
    Behandlingar
    -------------------------------------------------------------------------- */
 
+/* Beskrivningen av massagen, ovanför de två längderna */
+.treatment-intro {
+  max-width: 44em;
+  margin-top: 1.75rem;
+  margin-bottom: clamp(2.5rem, 6vw, 3.5rem);
+  color: var(--ink-soft);
+}
+
+.treatment-intro__name {
+  font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+}
+
+.treatment-intro__label {
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Punktlista med accentfärgad markör */
+.ticks {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.ticks li {
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+.ticks li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
 .treatments {
   display: grid;
   gap: 1.25rem;
