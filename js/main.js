@@ -117,4 +117,48 @@
     }
   }
 
+  /* ---------------------------------------------------------------
+     5. Mjuk intoning när en sektion rullas in i bild.
+
+        Klassen sätts härifrån och inte i HTML-filen, så att sidan
+        ser likadan ut även om JavaScript är avstängt — då syns allt
+        direkt i stället för att ligga osynligt i väntan på ett skript.
+
+        UNDANTAG, med flit:
+          .hero       — ligger överst och ska synas direkt
+          #boka       — bokningskalendern
+          #hitta-hit  — 360-vyn
+        De två sista innehåller inbäddat innehåll från andra sajter.
+        En förälder som animeras med opacity eller transform skapar ett
+        eget koordinatsystem, vilket kan störa hur en iframe placerar
+        sig. Ta inte bort det undantaget.
+     --------------------------------------------------------------- */
+  var villHaMindreRorelse = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!villHaMindreRorelse && 'IntersectionObserver' in window) {
+    var undantag = { 'boka': true, 'hitta-hit': true };
+
+    var sektioner = [].slice.call(document.querySelectorAll('main > section'))
+      .filter(function (el) {
+        return !undantag[el.id] && !el.classList.contains('hero');
+      });
+
+    if (sektioner.length) {
+      var betraktare = new IntersectionObserver(function (poster) {
+        poster.forEach(function (post) {
+          if (post.isIntersecting) {
+            post.target.classList.add('is-visible');
+            betraktare.unobserve(post.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+
+      sektioner.forEach(function (el) {
+        el.classList.add('reveal');
+        betraktare.observe(el);
+      });
+    }
+  }
+
 })();
